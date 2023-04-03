@@ -1,12 +1,103 @@
 package com.digital.helpdesk.models;
 
+import org.hibernate.validator.constraints.Length;
+
 import javax.persistence.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotEmpty;
+import java.util.Set;
+
 
 @Entity
-@Table
+@Table(name = "user")
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column
     private Long id;
+
+    @Column
+    @Email(message = "Please, provide a valid email")
+    @NotEmpty(message = "Must be not empty")
+    private String email;
+
+    @Column
+    private String name;
+
+    @Column
+    @NotEmpty(message = "Must be not empty")
+    @Length(min = 5, message = "You need to provide a password that contains at least 5 characters")
+    private String password;
+
+    @Column
+    @NotEmpty(message = "Must be not empty")
+    private String lastName;
+
+    @Column
+    private boolean active;
+
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(name = "users_role",
+            joinColumns = @JoinColumn(name = "user_id") ,
+            inverseJoinColumns = @JoinColumn(name = "role_id"))
+    private Set<Role> roles;
+
+    public User(){}
+    public User(String email, String name, String lastName, boolean active, String password){
+        this.email = email;
+        this.name = name;
+        this.lastName = lastName;
+        this.password = password;
+        this.active = active;
+    }
+
+    public User(Long id, String email, String name, String lastName, boolean active, String password){
+        this.id = id;
+        this.email = email;
+        this.name = name;
+        this.lastName = lastName;
+        this.password = password;
+        this.active = active;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
 }
