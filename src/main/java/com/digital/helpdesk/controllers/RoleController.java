@@ -19,6 +19,7 @@ public class RoleController {
 
     @GetMapping
     public String index(Model model){
+        model.addAttribute("roles", service.findAll());
         return "roles/index";
     }
     @GetMapping("/new")
@@ -33,6 +34,12 @@ public class RoleController {
             return "redirect:/roles/new";
         }
         Role roleCreated = service.create(role);
+        return "redirect:/roles";
+    }
+
+    @DeleteMapping("{id}")
+    public String delete(@PathVariable("id") Long id, Model model){
+        service.delete(id);
         return "redirect:/roles";
     }
 

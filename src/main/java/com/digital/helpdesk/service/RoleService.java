@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -21,8 +22,15 @@ public class RoleService {
        return repository.findAll();
     }
     public Role create(Role role){
+        role.setName(role.getName().toUpperCase());
         repository.save(role);
         return null;
     }
 
+    public void delete(Long id) {
+        Optional<Role> role = repository.findById(id);
+        if(role.isPresent()){
+            repository.delete(role.get());
+        }
+    }
 }
