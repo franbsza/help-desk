@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head  th:include="layout :: head">
+</head>
+
+<body class="container">
+
+<header th:replace="fragments/header :: header"> </header>
+
+<div th:fragment="content">
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td></td>
+                <td></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div th:include="layout :: scripts"> </div>
+</body>
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head  th:include="layout :: head">
+</head>
+
+<body class="container">
+
+<header th:replace="fragments/header :: header"> </header>
+
+<div th:fragment="content">
+
+    <div class="col-xs-12 col-md-12">
+        <a href="/roles/new" class="btn btn-success">Create</a>
+    </div>
+    <div class="col-xs-12">
+
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="role : ${roles}">
+                <td th:text="${role.id}"></td>
+                <td th:text="${role.name}"></td>
+                <td>
+                    <form th:action="@{/roles/{id}(id = ${role.id} )}" th:method="delete">
+                        <button class="btn btn-danger">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    </div>
+</div>
+
+<div th:include="layout :: scripts"> </div>
+
+</body>
+</html>
