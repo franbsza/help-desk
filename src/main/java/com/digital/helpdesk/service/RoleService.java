@@ -14,23 +14,33 @@ public class RoleService {
 
     private final RoleRepository repository;
 
-    public Role findOne(Long id){
-        return repository.findById(id).get();
+    public Optional<Role> findOne(Long id){
+        Optional<Role> result = repository.findById(id);
+        return result;
     }
 
     public List<Role> findAll(){
        return repository.findAll();
     }
+
     public Role create(Role role){
         role.setName(role.getName().toUpperCase());
         repository.save(role);
         return null;
     }
 
-    public void delete(Long id) {
-        Optional<Role> role = repository.findById(id);
-        if(role.isPresent()){
-            repository.delete(role.get());
+    public Role update(Role role){
+        if(repository.existsById(role.getId())){
+            return repository.save(role);
         }
+        return null;
+    }
+
+    public Boolean delete(Long id) {
+        if(repository.existsById(id)){
+            repository.deleteById(id);
+            return true;
+        }
+        return false;
     }
 }
