@@ -31,6 +31,7 @@ public class RoleService {
 
     public Role update(Role role){
         if(repository.existsById(role.getId())){
+            role.setName(role.getName().toUpperCase());
             return repository.save(role);
         }
         return null;
