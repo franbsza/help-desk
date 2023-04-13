@@ -9,7 +9,7 @@ import java.util.Set;
 
 
 @Entity
-@Table(name = "user")
+@Table(name = "users")
 public class User {
 
     @Id
@@ -35,7 +35,7 @@ public class User {
     private String lastName;
 
     @Column
-    private boolean active;
+    private boolean active = true;
 
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "users_role",
@@ -59,6 +59,22 @@ public class User {
         this.lastName = lastName;
         this.password = password;
         this.active = active;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Set<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
     }
 
     public boolean isActive() {
