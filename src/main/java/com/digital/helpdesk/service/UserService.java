@@ -16,18 +16,15 @@ public class UserService {
 
     private final UserRepository repository;
     private final RoleRepository roleRepository;
-    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    public Optional<User> findOne(Long id){
-        Optional<User> result = repository.findById(id);
-        return result;
+    public Optional<User> findOne(UUID id){
+        return repository.findById(id);
     }
 
     public User create(User user){
-
-        Role roleName = roleRepository.findByName("USER");
-        user.setRoles(new HashSet<Role>(Arrays.asList(roleName)));
-        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+        Role roleName = roleRepository.findByName("ROLE_USER");
+        user.setRoles(new ArrayList<>(Arrays.asList(roleName)));
+        user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
         return repository.save(user);
     }
 
@@ -35,7 +32,7 @@ public class UserService {
         return repository.findAll();
     }
 
-    public boolean delete(Long id) {
+    public boolean delete(UUID id) {
         if(repository.existsById(id)){
             repository.deleteById(id);
             return true;
@@ -45,7 +42,7 @@ public class UserService {
 
     public User update(User user) {
         if(repository.existsById(user.getId())){
-            user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+            user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
             return repository.save(user);
         }
         return null;
