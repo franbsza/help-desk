@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @AllArgsConstructor
@@ -14,9 +15,8 @@ public class RoleService {
 
     private final RoleRepository repository;
 
-    public Optional<Role> findOne(Long id){
-        Optional<Role> result = repository.findById(id);
-        return result;
+    public Optional<Role> findOne(UUID id){
+        return repository.findById(id);
     }
 
     public List<Role> findAll(){
@@ -25,8 +25,7 @@ public class RoleService {
 
     public Role create(Role role){
         role.setName(role.getName().toUpperCase());
-        repository.save(role);
-        return null;
+        return repository.save(role);
     }
 
     public Role update(Role role){
@@ -37,7 +36,7 @@ public class RoleService {
         return null;
     }
 
-    public Boolean delete(Long id) {
+    public Boolean delete(UUID id) {
         if(repository.existsById(id)){
             repository.deleteById(id);
             return true;

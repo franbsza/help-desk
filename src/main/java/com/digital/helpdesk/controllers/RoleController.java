@@ -9,6 +9,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.UUID;
 
 @AllArgsConstructor
 @Controller
@@ -38,9 +39,11 @@ public class RoleController {
     }
 
     @GetMapping("/{id}")
-    public String edit(@PathVariable("id") Long id, Model model){
-        Role role = service.findOne(id).get();
-        model.addAttribute("role", role);
+    public String edit(@PathVariable("id") UUID id, Model model){
+        if(service.findOne(id).isPresent()){
+            Role role = service.findOne(id).get();
+            model.addAttribute("role", role);
+        }
         return "roles/edit";
     }
 
@@ -53,7 +56,7 @@ public class RoleController {
     }
 
     @DeleteMapping("{id}")
-    public String delete(@PathVariable("id") Long id, Model model){
+    public String delete(@PathVariable("id") UUID id, Model model){
         service.delete(id);
         return "redirect:/roles";
     }
