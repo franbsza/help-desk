@@ -1,12 +1,13 @@
 package com.digital.helpdesk.repository;
 
-import com.digital.helpdesk.models.Role;
+import com.digital.helpdesk.models.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface RoleRepository extends JpaRepository<Role, UUID> {
-    Role findByName(String name);
+public interface UserRepository extends JpaRepository<User, UUID> {
+    Optional<User> findByEmail(String email);
 }
