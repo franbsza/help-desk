@@ -1,13 +1,14 @@
 package com.digital.helpdesk.service;
 
+import com.digital.helpdesk.dto.RoleDTO;
 import com.digital.helpdesk.models.Role;
 import com.digital.helpdesk.repository.RoleRepository;
+import com.digital.helpdesk.utils.mappers.RoleMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 
 @Service
 @AllArgsConstructor
@@ -15,32 +16,43 @@ public class RoleService {
 
     private final RoleRepository repository;
 
-    public Optional<Role> findOne(UUID id){
-        return repository.findById(id);
+    public RoleDTO findOne(Long id){
+
+        Role role = repository.findById(id).orElseThrow(()->
+                new EntityNotFoundException("RoleID: "+ id +" Not Found!"));
+        RoleMapper roleMapper = new RoleMapper();
+        return roleMapper.mapToDTO(role);
     }
 
-    public List<Role> findAll(){
-       return repository.findAll();
+    public RoleDTO create(RoleDTO roleDTO){
+        roleDTO.setName(roleDTO.getName().toUpperCase());
+        RoleMapper roleMapper = new RoleMapper();
+        Role roleCreated = repository.save(roleMapper.mapToModel(roleDTO));
+        return roleMapper.mapToDTO(roleCreated);
     }
 
-    public Role create(Role role){
-        role.setName(role.getName().toUpperCase());
-        return repository.save(role);
+    public List<RoleDTO> findAll(){
+        List<Role> roles = repository.findAll();
+        RoleMapper roleMapper = new RoleMapper();
+        return roleMapper.map(roles);
     }
 
-    public Role update(Role role){
-        if(repository.existsById(role.getId())){
-            role.setName(role.getName().toUpperCase());
-            return repository.save(role);
-        }
-        return null;
-    }
-
-    public Boolean delete(UUID id) {
-        if(repository.existsById(id)){
+    public Boolean delete(Long id) {
+        try {
             repository.deleteById(id);
             return true;
+        }catch (EntityNotFoundException e){
+            return false;
         }
-        return false;
+    }
+
+    public RoleDTO update(Long id, RoleDTO roleDTO){
+        repository.findById(id).orElseThrow( () ->
+                new EntityNotFoundException("RoleID: "+ id +" Not Found!"));
+
+        RoleMapper roleMapper = new RoleMapper();
+        roleDTO.setName(roleDTO.getName().toUpperCase());
+        Role role = repository.save(roleMapper.mapToModel(roleDTO));
+        return roleMapper.mapToDTO(role);
     }
 }
