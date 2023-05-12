@@ -1,70 +1,65 @@
 package com.digital.helpdesk.models;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
-import org.hibernate.validator.constraints.Length;
+import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import javax.persistence.*;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotEmpty;
-import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Data
 @Entity
 @Table(name = "users")
-public class User implements UserDetails , Serializable {
-
-    private static final long serialVersionUID = 1L;
-
+public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "users_id")
-    private UUID id;
+    private Long id;
 
     @Column(nullable = false, unique = true)
-    @NotEmpty(message = "Must be not empty. Please, provide a valid nickname")
-    private String nickname;
-
-    @Column(nullable = false, unique = true)
-    @Email(message = "Please, provide a valid email")
-    @NotEmpty(message = "Must be not empty")
     private String email;
+
+    @Column
+    private String password;
 
     @Column
     private String name;
 
     @Column
-    @NotEmpty(message = "Must be not empty")
-    @Length(min = 5, message = "You need to provide a password that contains at least 5 characters")
-    private String password;
-
-    @Column
-    @NotEmpty(message = "Must be not empty")
     private String lastName;
+
+    @Column(nullable = false, unique = true)
+    private String nickname;
 
     @Column
     private boolean active = true;
 
-    @ManyToMany(targetEntity = Role.class, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinTable(name = "users_roles",
-            joinColumns = @JoinColumn(name = "users_id") ,
-            inverseJoinColumns = @JoinColumn(name = "roles_id"))
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "users_roles",
+            joinColumns = @JoinColumn(
+                    name = "users_id", referencedColumnName = "users_id"),
+            inverseJoinColumns = @JoinColumn(
+                    name = "roles_id", referencedColumnName = "roles_id"))
     private List<Role> roles;
 
-    public User(){}
-
-    public User(String email, String name, String lastName, boolean active, String password, List<Role> roles){
+    public User(String email, String name, String lastName, boolean active, String password, String nickname, List<Role> roles){
         this.email = email;
         this.name = name;
         this.lastName = lastName;
         this.password = password;
         this.active = active;
+        this.nickname = nickname;
         this.roles = roles;
     }
 
-    public User(UUID id, String email, String name, String lastName, boolean active, String password, List<Role> roles){
+    public User(Long id, String email, String name, String lastName, boolean active, String password, List<Role> roles){
         this.id = id;
         this.email = email;
         this.name = name;
@@ -73,6 +68,7 @@ public class User implements UserDetails , Serializable {
         this.active = active;
         this.roles = roles;
     }
+
     public List<Role> getRoles() {
         return roles;
     }

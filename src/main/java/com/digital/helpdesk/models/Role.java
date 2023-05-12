@@ -1,40 +1,44 @@
 package com.digital.helpdesk.models;
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
-import java.io.Serializable;
 import java.util.List;
-import java.util.UUID;
 
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Data
 @Entity
 @Table(name = "roles")
-public class Role implements GrantedAuthority , Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class Role implements GrantedAuthority {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "roles_id")
-    private UUID id;
+    private Long id;
 
     @Column
     @NotEmpty(message = "Must be not empty")
     private String name;
 
-    @ManyToMany(targetEntity = User.class, mappedBy = "roles", cascade = CascadeType.ALL)
+    @JsonIgnore
+    @ManyToMany(mappedBy = "roles", fetch = FetchType.LAZY)
     private List<User> users;
 
-    public List<User> getUsers() {
-        return users;
-    }
-
-    public void setUsers(List<User> users) {
-        this.users = users;
-    }
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "roles_privileges",
+            joinColumns = @JoinColumn(
+                    name = "roles_id", referencedColumnName = "roles_id"),
+            inverseJoinColumns = @JoinColumn(
+                    name = "privileges_id", referencedColumnName = "privileges_id"))
+    private List<Privilege> privileges;
 
     @Override
     public String getAuthority() {

@@ -3,6 +3,7 @@ package com.digital.helpdesk.config;
 import com.digital.helpdesk.models.Privilege;
 import com.digital.helpdesk.models.Role;
 import com.digital.helpdesk.models.User;
+import com.digital.helpdesk.models.enums.*;
 import com.digital.helpdesk.repository.PrivilegeRepository;
 import com.digital.helpdesk.repository.RoleRepository;
 import com.digital.helpdesk.repository.UserRepository;
@@ -39,15 +40,15 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
         }
 
         // == create initial privileges
-        final Privilege readPrivilege = createPrivilegeIfNotFound("READ_PRIVILEGE");
-        final Privilege writePrivilege = createPrivilegeIfNotFound("WRITE_PRIVILEGE");
-        final Privilege passwordPrivilege = createPrivilegeIfNotFound("CHANGE_PASSWORD_PRIVILEGE");
+        final Privilege readPrivilege = createPrivilegeIfNotFound(Privileges.READ.name());
+        final Privilege writePrivilege = createPrivilegeIfNotFound(Privileges.WRITE.name());
+        final Privilege passwordPrivilege = createPrivilegeIfNotFound(Privileges.CHANGE_PASSWORD.name());
 
         // == create initial roles
         final List<Privilege> adminPrivileges = new ArrayList<>(Arrays.asList(readPrivilege, writePrivilege, passwordPrivilege));
         final List<Privilege> userPrivileges = new ArrayList<>(Arrays.asList(readPrivilege, passwordPrivilege));
-        final Role adminRole = createRoleIfNotFound("ROLE_ADMIN", adminPrivileges);
-        createRoleIfNotFound("ROLE_USER", userPrivileges);
+        final Role adminRole = createRoleIfNotFound(Roles.ROLE_ADMIN.name(), adminPrivileges);
+        createRoleIfNotFound(Roles.ROLE_USER.name(), userPrivileges);
 
         // == create initial user
         createUserIfNotFound("test@test.com", "Test", "Test", "test", "test", new ArrayList<>(Arrays.asList(adminRole)));
