@@ -1,68 +1,58 @@
 package com.digital.helpdesk.controllers;
 
-import com.digital.helpdesk.models.User;
+import com.digital.helpdesk.dto.UserDTO;
 import com.digital.helpdesk.service.UserService;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.validation.Valid;
-import java.util.UUID;
+import java.net.URI;
+import java.util.List;
 
 @AllArgsConstructor
-@Controller
+@RestController
 @RequestMapping("users")
 public class UserController {
 
     private final UserService service;
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @GetMapping
-    public String index(Model model){
-        model.addAttribute("users", service.findAll());
-        return "users/index";
+    public List<UserDTO> getAll(){
+        return service.findAll();
+    }
+    @GetMapping(value = "/user", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<UserDTO> get(@RequestParam("id") Long id){
+        return ResponseEntity.ok(service.findOne(id));
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
-    @GetMapping("/new")
-    public String create(Model model){
-        model.addAttribute("user", new User());
-        return "users/create";
+    @PreAuthorize("hasAnyRole('ROLE_USER')")
+    @PostMapping(value = "/new",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<UserDTO> create(@RequestBody UserDTO user, UriComponentsBuilder uriBuilder){
+        UserDTO userCreated = service.create(user);
+        URI uri = uriBuilder.path("/users/{id}").buildAndExpand(userCreated.getId()).toUri();
+        return ResponseEntity.created(uri).body(userCreated);
     }
 
-    @PostMapping
-    public String save(@Valid @ModelAttribute("user") User user, BindingResult bindingResult, Model model){
-        if(bindingResult.hasErrors()){
-            return "redirect:/users/new";
-        }
-        service.create(user);
-        return "redirect:/users";
-    }
-
-    @GetMapping("/{id}")
-    public String edit(@PathVariable("id") UUID id, Model model){
-        if(service.findOne(id).isPresent()){
-            User user = service.findOne(id).get();
-            model.addAttribute("user", user);
-        }
-        return "users/edit";
-    }
-
-    @PutMapping("/edit")
-    public String editUser(@Valid @ModelAttribute("user") User user, BindingResult bindingResult, Model model){
-
-        User roleUpdated = service.update(user);
-
-        return "redirect:/users";
+    @PreAuthorize("hasAnyRole('ROLE_USER')")
+    @PutMapping(value = "/edit",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<UserDTO> edit(@RequestHeader(value = "id") Long id, @Valid @RequestBody UserDTO userDTO){
+        return ResponseEntity.ok().body(service.update(id, userDTO));
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @DeleteMapping("{id}")
-    public String delete(@PathVariable("id") UUID id, Model model){
+    @DeleteMapping
+    public ResponseEntity delete(@RequestHeader("id") Long id){
         service.delete(id);
-        return "redirect:/users";
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }
