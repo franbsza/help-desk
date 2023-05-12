@@ -1,5 +1,6 @@
 package com.digital.helpdesk.config;
 
+import com.digital.helpdesk.dto.ExceptionDTO;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

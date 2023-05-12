@@ -1,4 +1,4 @@
-package com.digital.helpdesk.config;
+package com.digital.helpdesk.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
